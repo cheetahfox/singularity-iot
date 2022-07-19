@@ -17,7 +17,7 @@ func GetHealthz(c *fiber.Ctx) error {
 }
 
 func GetReadyz(c *fiber.Ctx) error {
-	if !MqttReady {
+	if !MqttReady || !InfluxReady {
 		return c.SendStatus(503)
 	}
 	return c.SendStatus(200)

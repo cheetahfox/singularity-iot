@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/gofiber/fiber/v2 v2.35.0
-	github.com/influxdata/influxdb-client-go v1.4.0
 	github.com/influxdata/influxdb-client-go/v2 v2.9.1
 )
 

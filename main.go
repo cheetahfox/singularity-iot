@@ -26,7 +26,6 @@ const Version = "0.01"
 
 func main() {
 	config := config.Startup()
-	database.ConnectInflux(config)
 
 	iotmw := fiber.New(config.FiberConfig)
 
@@ -36,6 +35,8 @@ func main() {
 		iotmw.Listen(":2200")
 	}()
 
+	database.ConnectInflux(config)
+	mqttcallbacks.SetDefaultCallbacks(&config)
 	client := mqtt.NewClient(&config.Options)
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil {

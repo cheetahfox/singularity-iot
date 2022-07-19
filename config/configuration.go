@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	mqttcallbacks "github.com/cheetahfox/Iot-local-midware/mqtt_callbacks"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
 )
@@ -44,9 +43,7 @@ func Startup() Configuration {
 	conf.Options = *mqtt.NewClientOptions()
 	conf.Options.AddBroker(os.Getenv("MQTT_BROKER"))
 	conf.Options.SetClientID(os.Getenv("MQTT_ID"))
-	conf.Options.SetDefaultPublishHandler(mqttcallbacks.MessagePubHandler)
-	conf.Options.OnConnect = mqttcallbacks.ConnectHandler
-	conf.Options.OnConnectionLost = mqtt.DefaultConnectionLostHandler
+	conf.MqttTopic = os.Getenv("MQTT_TOPIC")
 
 	// Fiber Setup
 	conf.FiberConfig = fiber.Config{
