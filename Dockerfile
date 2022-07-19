@@ -10,7 +10,7 @@ WORKDIR /go/src/github.com/cheetahfox
 RUN git clone https://github.com/cheetahfox/Iot-local-midware.git
 
 WORKDIR /go/src/github/cheetahfox/Iot-local-midware
-RUN go mod tidy
+RUN ls -al
 RUN go build
 
 FROM alpine:3.16
