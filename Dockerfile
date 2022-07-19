@@ -15,6 +15,6 @@ RUN go build
 
 FROM alpine:3.16
 
-COPY --from=builder /go/src/github/cheetahfox/Iot-local-midware/Iot-local-midware . 
+COPY --from=builder /go/src/github.com/cheetahfox/Iot-local-midware/Iot-local-midware . 
 EXPOSE 2200
 CMD ./Iot-local-midware
