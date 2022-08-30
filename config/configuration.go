@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -17,6 +18,7 @@ type Configuration struct {
 	Org            string
 	Token          string
 	MqttTopic      string
+	InfluxMaxError int
 }
 
 // Set configuration options from Env values and setup the Fiber options
@@ -31,6 +33,7 @@ func Startup() Configuration {
 		"MQTT_BROKER",   // MQTT access Url
 		"MQTT_ID",       // MQTT ID of this client
 		"MQTT_TOPIC",    // MQTT Topic
+		"DB_MAX_ERROR",
 	}
 
 	// Check if the Required Enviromental varibles are set exit if they aren't.
@@ -44,6 +47,12 @@ func Startup() Configuration {
 	conf.Options.AddBroker(os.Getenv("MQTT_BROKER"))
 	conf.Options.SetClientID(os.Getenv("MQTT_ID"))
 	conf.MqttTopic = os.Getenv("MQTT_TOPIC")
+	// Set a default max error and then read the env value.
+	conf.InfluxMaxError = 10
+	influxerrors, err := strconv.Atoi(os.Getenv("DB_MAX_ERROR"))
+	if err != nil {
+		conf.InfluxMaxError = influxerrors
+	}
 
 	// Fiber Setup
 	conf.FiberConfig = fiber.Config{

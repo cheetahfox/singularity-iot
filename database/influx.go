@@ -25,8 +25,15 @@ func ConnectInflux(config config.Configuration) {
 	errorsCh := DbWrite.Errors()
 	// Catch any write errors
 	go func() {
+		var errorCount int
 		for err := range errorsCh {
-			fmt.Printf("write error: %s\n", err.Error())
+			fmt.Printf("Influx write error: %s\n", err.Error())
+			errorCount++
+			// max number of errors before we set health state to false.
+			if errorCount > config.InfluxMaxError {
+				health.InfluxReady = false
+				fmt.Println("Maximum Influx error count reached!")
+			}
 		}
 	}()
 	fmt.Printf("Connected to Influxdb %s\n", config.InfluxdbServer)

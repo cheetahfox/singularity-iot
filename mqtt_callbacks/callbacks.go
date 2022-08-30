@@ -3,12 +3,20 @@ package mqttcallbacks
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/cheetahfox/Iot-local-midware/config"
 	"github.com/cheetahfox/Iot-local-midware/health"
 	shelly "github.com/cheetahfox/Iot-local-midware/shelly"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
+
+var lastRecieved time.Time
+
+func init() {
+	lastRecieved = time.Now()
+	go receiveCheck()
+}
 
 var MessagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("Message %s published on topic %s\n", msg.Payload(), msg.Topic())
@@ -30,8 +38,9 @@ var ConnectionLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, 
 	health.MqttReady = false
 }
 
-// This will process all incoming subscribed messages. Here we will call device specific functions
+// This will process all incoming subscribed messages. Here we will call device family specific functions
 var MessageSubHandler mqtt.MessageHandler = func(c mqtt.Client, msg mqtt.Message) {
+	lastRecieved = time.Now()
 	// Shelly Devices
 	shellyRe, _ := regexp.Compile("shellies/.+$")
 
@@ -48,4 +57,19 @@ func SetDefaultCallbacks(c *config.Configuration) {
 	c.Options.SetDefaultPublishHandler(MessagePubHandler)
 	c.Options.OnConnect = ConnectHandler
 	c.Options.OnConnectionLost = ConnectionLostHandler
+}
+
+/*
+Check to see if we are getting Mqtt messages if we don't after 5 minutes we set not ready
+I am doing this since I have seen the OnConnectHandler doesn't always reconnect
+*/
+func receiveCheck() {
+	ticker := time.NewTicker(time.Second * time.Duration(15))
+	for range ticker.C {
+		now := time.Now()
+		if now.Sub(lastRecieved) <= (time.Second * time.Duration(300)) {
+			health.MqttReady = false
+			fmt.Printf("300 seconds or more since mqtt message recieved: marking not ready: %s", now.Format(time.UnixDate))
+		}
+	}
 }
