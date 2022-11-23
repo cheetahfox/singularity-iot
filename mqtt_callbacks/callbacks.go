@@ -67,7 +67,7 @@ func receiveCheck() {
 	ticker := time.NewTicker(time.Second * time.Duration(15))
 	for range ticker.C {
 		now := time.Now()
-		if now.Sub(lastRecieved) <= (time.Second * time.Duration(300)) {
+		if now.Sub(lastRecieved) >= (time.Second * time.Duration(300)) {
 			health.MqttReady = false
 			fmt.Printf("300 seconds or more since mqtt message recieved: marking not ready: %s", now.Format(time.UnixDate))
 		}

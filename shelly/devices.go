@@ -7,6 +7,7 @@ package shelly
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -25,8 +26,9 @@ func ReceiveMessage(msg mqtt.Message) {
 	case shellyAnnouce.MatchString(msg.Topic()):
 		receiveAnnounce(msg)
 	default:
+		now := time.Now()
 		fmt.Println("unknown Shelly message: not processed")
-		fmt.Printf("Published on Topic: %s  value: %s\n", msg.Topic(), msg.Payload())
+		fmt.Printf("Published on Topic: %s value: %s @ %s \n", msg.Topic(), msg.Payload(), now.Format(time.UnixDate))
 	}
 }
 

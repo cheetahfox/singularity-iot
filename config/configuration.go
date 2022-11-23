@@ -1,6 +1,22 @@
+/*
+
+Yaml device config file format
+
+Default Location: /etc/singularity/devices.yml
+
+---
+iotdevices:
+  - name:   shellytv
+	hwtype: shelly25
+	mqid:   "98CDAC38E9F5"
+	topic:  "shellies/shellyswitch25-98CDAC38E9F5"
+  - name: ...
+*/
 package config
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -8,7 +24,18 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
+	"gopkg.in/yaml.v2"
 )
+
+const DeviceConfig = "/etc/singularity/devices.yml"
+
+// Iotdevices
+type Iotdevices struct {
+	Name   string `yaml:"name"`
+	Hwtype string `yaml:"hwtype"`
+	Mqid   string `yaml:"mqid"`
+	Topic  string `yaml:"topic"`
+}
 
 type Configuration struct {
 	Options        mqtt.ClientOptions
@@ -18,6 +45,7 @@ type Configuration struct {
 	Org            string
 	Token          string
 	MqttTopic      string
+	Devices        []Iotdevices `yaml:"iotdevices"`
 	InfluxMaxError int
 }
 
@@ -68,6 +96,22 @@ func Startup() Configuration {
 	conf.Bucket = os.Getenv("INFLUX_BUCKET")
 	conf.Org = os.Getenv("INFLUX_ORG")
 	conf.InfluxdbServer = os.Getenv("INFLUX_SERVER")
+
+	// Read and parse the iot device configuration
+	configfile, err := ioutil.ReadFile(DeviceConfig)
+	if err != nil {
+		fmt.Println("Unable to read device config")
+		log.Fatal(err)
+	}
+
+	err = yaml.Unmarshal(configfile, &conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i, _ := range conf.Devices {
+		fmt.Println(conf.Devices[i].Name)
+	}
 
 	return conf
 }

@@ -37,6 +37,13 @@ type shelly25Device struct {
 	metric     map[string]float64
 }
 
+func makeShelly25dev() shelly25Device {
+	var dev shelly25Device
+	dev.metric = make(map[string]float64, 0)
+
+	return dev
+}
+
 // Check to see if the metric string matches the valid options
 func validateMetric(metric string) bool {
 	verbs := []string{
@@ -65,7 +72,7 @@ Here I parse through the Mtqq message and return a struct with the device detail
 This is complicated by the fact that the length topic encodes what we data/case we have.
 */
 func parseMessage25(msg mqtt.Message) (shelly25Device, error) {
-	var dev shelly25Device
+	dev := makeShelly25dev()
 
 	// All valid messages should be at least three values and less than 6 when split
 	msgTopic := strings.Split(msg.Topic(), "/")
