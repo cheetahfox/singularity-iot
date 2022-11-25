@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cheetahfox/Iot-local-midware/config"
-	"github.com/cheetahfox/Iot-local-midware/health"
+	"github.com/cheetahfox/singularity-iot/config"
+	"github.com/cheetahfox/singularity-iot/health"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/domain"

@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cheetahfox/Iot-local-midware/database"
+	"github.com/cheetahfox/singularity-iot/database"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )

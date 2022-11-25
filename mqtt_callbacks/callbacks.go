@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/cheetahfox/Iot-local-midware/config"
-	"github.com/cheetahfox/Iot-local-midware/health"
-	shelly "github.com/cheetahfox/Iot-local-midware/shelly"
+	"github.com/cheetahfox/singularity-iot/config"
+	"github.com/cheetahfox/singularity-iot/health"
+	shelly "github.com/cheetahfox/singularity-iot/shelly"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 

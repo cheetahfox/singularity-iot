@@ -13,10 +13,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cheetahfox/Iot-local-midware/config"
-	"github.com/cheetahfox/Iot-local-midware/database"
-	mqttcallbacks "github.com/cheetahfox/Iot-local-midware/mqtt_callbacks"
-	"github.com/cheetahfox/Iot-local-midware/router"
+	"github.com/cheetahfox/singularity-iot/config"
+	"github.com/cheetahfox/singularity-iot/database"
+	mqttcallbacks "github.com/cheetahfox/singularity-iot/mqtt_callbacks"
+	"github.com/cheetahfox/singularity-iot/router"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"

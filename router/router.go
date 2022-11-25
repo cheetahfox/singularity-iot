@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/cheetahfox/Iot-local-midware/health"
+	"github.com/cheetahfox/singularity-iot/health"
 	"github.com/gofiber/fiber/v2"
 )
 
