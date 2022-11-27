@@ -7,14 +7,14 @@ RUN mkdir /go/src/github.com/cheetahfox
 
 WORKDIR /go/src/github.com/cheetahfox
 
-RUN git clone https://github.com/cheetahfox/Iot-local-midware.git
+RUN git clone https://github.com/cheetahfox/singularity-iot.git
 
-WORKDIR /go/src/github.com/cheetahfox/Iot-local-midware
+WORKDIR /go/src/github.com/cheetahfox/singularity-iot/
 
 RUN go build
 
 FROM alpine:3.16
 
-COPY --from=builder /go/src/github.com/cheetahfox/Iot-local-midware/Iot-local-midware . 
+COPY --from=builder /go/src/github.com/cheetahfox/singularity-iot/singularity-iot . 
 EXPOSE 2200
-CMD ./Iot-local-midware
+CMD ./singularity-iot
