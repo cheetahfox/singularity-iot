@@ -7,7 +7,7 @@ import (
 
 func SetupRoutes(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Iot Middleware running") // send text
+		return c.SendString("Singularity Running running") // send text
 	})
 
 	app.Get("/healthz", health.GetHealthz)

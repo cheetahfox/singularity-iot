@@ -83,15 +83,15 @@ func parseMessage25(msg mqtt.Message) (shelly25Device, error) {
 
 	// This means we have a device metric
 	if len(msgTopic) == 3 {
-		if !validateMetric(msgTopic[3]) {
-			errmessage := fmt.Sprintf("invalid metric : %s\n", msgTopic[3])
+		if !validateMetric(msgTopic[2]) {
+			errmessage := fmt.Sprintf("invalid metric : %s\n", msgTopic[2])
 			return dev, errors.New(errmessage)
 		}
 		metric, err := strconv.ParseFloat(string(msg.Payload()), 64)
 		if err != nil {
 			return dev, err
 		}
-		dev.metric[msgTopic[3]] = metric
+		dev.metric[msgTopic[2]] = metric
 	}
 
 	/*
@@ -103,13 +103,13 @@ func parseMessage25(msg mqtt.Message) (shelly25Device, error) {
 		switch msgTopic[3] {
 		case "input":
 			dev.mode = "input"
-			metricName = fmt.Sprintf("input%s", msgTopic[4])
+			metricName = fmt.Sprintf("input%s", msgTopic[3])
 		case "relay":
 			dev.mode = "relay"
-			metricName = fmt.Sprintf("relay%s", msgTopic[4])
+			metricName = fmt.Sprintf("relay%s", msgTopic[3])
 		case "roller":
 			dev.mode = "roller"
-			metricName = fmt.Sprintf("roller%s", msgTopic[4])
+			metricName = fmt.Sprintf("roller%s", msgTopic[3])
 		}
 		metric, err := strconv.ParseFloat(string(msg.Payload()), 64)
 		if err != nil {

@@ -22,17 +22,26 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const Version = "0.01"
+const Version = "0.05"
+
+func startListeners(conf config.Configuration) error {
+
+	for i, _ := range conf.Devices {
+		fmt.Println(conf.Devices[i].Name)
+	}
+
+	return nil
+}
 
 func main() {
 	config := config.Startup()
 
-	iotmw := fiber.New(config.FiberConfig)
+	singularity := fiber.New(config.FiberConfig)
 
-	router.SetupRoutes(iotmw)
+	router.SetupRoutes(singularity)
 
 	go func() {
-		iotmw.Listen(":2200")
+		singularity.Listen(":2200")
 	}()
 
 	database.ConnectInflux(config)
@@ -62,7 +71,7 @@ func main() {
 
 	<-done
 	fmt.Println("Shutdown Started")
-	iotmw.Shutdown()
+	singularity.Shutdown()
 	database.DisconnectInflux()
 	client.Disconnect(100)
 }

@@ -109,9 +109,5 @@ func Startup() Configuration {
 		log.Fatal(err)
 	}
 
-	for i, _ := range conf.Devices {
-		fmt.Println(conf.Devices[i].Name)
-	}
-
 	return conf
 }
