@@ -46,3 +46,20 @@ func receiveAnnounce(msg mqtt.Message) {
 	fmt.Println("Shelly device annoucement")
 	fmt.Println(msg.Payload())
 }
+
+/*
+Generic shelly device temp func
+
+Example mqtt output.
+
+Shelly 25 Device -  shellies/shellyswitch25-98CDAC38E9F5/temperature: 45.90
+
+*/
+func deviceTemp() {
+
+}
+
+// Generic function
+func messageRecive() {
+
+}
