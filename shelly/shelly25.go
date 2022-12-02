@@ -26,19 +26,29 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cheetahfox/singularity-iot/config"
 	"github.com/cheetahfox/singularity-iot/database"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-type shelly25Device struct {
+type shelly25Data struct {
 	macAddress string
 	mode       string
 	metric     map[string]float64
 }
 
-func makeShelly25dev() shelly25Device {
-	var dev shelly25Device
+// Init a new Shelly25
+func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
+	shellyTempSub(client, device.Maddr)
+	shellyPowerSub(client, device.Maddr, "0")
+	shellyPowerSub(client, device.Maddr, "1")
+
+	return nil
+}
+
+func makeShelly25data() shelly25Data {
+	var dev shelly25Data
 	dev.metric = make(map[string]float64, 0)
 
 	return dev
@@ -71,8 +81,8 @@ func validateMetric(metric string) bool {
 Here I parse through the Mtqq message and return a struct with the device details and the current metric/value
 This is complicated by the fact that the length topic encodes what we data/case we have.
 */
-func parseMessage25(msg mqtt.Message) (shelly25Device, error) {
-	dev := makeShelly25dev()
+func parseMessage25(msg mqtt.Message) (shelly25Data, error) {
+	dev := makeShelly25data()
 
 	// All valid messages should be at least three values and less than 6 when split
 	msgTopic := strings.Split(msg.Topic(), "/")

@@ -33,7 +33,7 @@ const DeviceConfig = "/etc/singularity/devices.yml"
 type Iotdevices struct {
 	Name   string `yaml:"name"`
 	Hwtype string `yaml:"hwtype"`
-	Mqid   string `yaml:"mqid"`
+	Maddr  string `yaml:"mqid"`
 	Topic  string `yaml:"topic"`
 }
 

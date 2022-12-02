@@ -48,7 +48,7 @@ var MessageSubHandler mqtt.MessageHandler = func(c mqtt.Client, msg mqtt.Message
 	case shellyRe.MatchString(msg.Topic()):
 		shelly.ReceiveMessage(msg)
 	default:
-		fmt.Printf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
+		//fmt.Printf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
 	}
 }
 

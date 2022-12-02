@@ -9,6 +9,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +18,7 @@ import (
 	"github.com/cheetahfox/singularity-iot/database"
 	mqttcallbacks "github.com/cheetahfox/singularity-iot/mqtt_callbacks"
 	"github.com/cheetahfox/singularity-iot/router"
+	"github.com/cheetahfox/singularity-iot/shelly"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
@@ -55,6 +57,16 @@ func main() {
 	token = client.Subscribe(config.MqttTopic, 1, mqttcallbacks.MessageSubHandler)
 	token.Wait()
 	fmt.Printf("Subscribed to topic %s\n", config.MqttTopic)
+
+	// setup devices
+	for i, _ := range config.Devices {
+		if config.Devices[i].Hwtype == "shelly25" {
+			err := shelly.InitShelly25dev(client, config.Devices[i])
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
 
 	// Listen for Sigint or SigTerm and exit if you get them.
 	sigs := make(chan os.Signal, 1)

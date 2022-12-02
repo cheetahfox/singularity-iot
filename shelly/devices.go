@@ -12,6 +12,16 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+// shellies/shellyswitch25-98CDAC38E9F5/temperature: 45.90
+var shellyTempHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	fmt.Printf("%s : %s\n", msg.Topic(), msg.Payload())
+}
+
+// shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 117.89
+var shellyPowerHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	fmt.Printf("%s : %s\n", msg.Topic(), msg.Payload())
+}
+
 func ReceiveMessage(msg mqtt.Message) {
 	// Device specific callbacks
 	shelly25Re, _ := regexp.Compile("shellies/shellyswitch25-.+$")
@@ -55,11 +65,13 @@ Example mqtt output.
 Shelly 25 Device -  shellies/shellyswitch25-98CDAC38E9F5/temperature: 45.90
 
 */
-func deviceTemp() {
-
+func shellyTempSub(client mqtt.Client, macAddr string) {
+	topic := "shellies/shellyswitch25-" + macAddr + "/temperature"
+	client.Subscribe(topic, 0, shellyTempHandler)
 }
 
-// Generic function
-func messageRecive() {
-
+// shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 117.89
+func shellyPowerSub(client mqtt.Client, macAddr string, relay string) {
+	topic := "hellies/shellyswitch25" + macAddr + "/realy/" + relay + "/power"
+	client.Subscribe(topic, 0, shellyPowerHandler)
 }
