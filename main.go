@@ -57,7 +57,7 @@ func main() {
 	*/
 
 	// setup devices
-	for i, _ := range config.Devices {
+	for i := range config.Devices {
 		if config.Devices[i].Hwtype == "shelly25" {
 			err := shelly.InitShelly25dev(client, config.Devices[i])
 			if err != nil {
