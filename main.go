@@ -25,14 +25,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const Version = "0.10"
+const Version = "0.1.11"
 
 func main() {
 	config := config.Startup()
 
 	singularity := fiber.New(config.FiberConfig)
 
-	prometheus := fiberprometheus.New("Singularity v0.10")
+	prometheus := fiberprometheus.New("Singularity v" + Version)
 	prometheus.RegisterAt(singularity, "/metrics")
 	singularity.Use(prometheus.Middleware)
 

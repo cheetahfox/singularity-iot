@@ -60,6 +60,7 @@ var shellyPowerHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.M
 	}
 }
 
+// shellies/shellyswitch25-98CDAC38E9F5/voltage: 122.26
 var shellyVoltageHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	health.LastRecieved = time.Now()
 
@@ -142,7 +143,7 @@ func shelly25EnergySub(c mqtt.Client, macAddr string, relay string) {
 
 // shellies/shellyswitch25-98CDAC38E9F5/voltage: 123.29
 func shelly25VotlageSub(client mqtt.Client, macAddr string) {
-	topic := "shellies/shellyswitch25-" + macAddr + "/votage"
+	topic := "shellies/shellyswitch25-" + macAddr + "/voltage"
 	client.Subscribe(topic, 0, shellyVoltageHandler)
 	fmt.Println("Shelly 2.5 Voltage subscribed: " + macAddr)
 }

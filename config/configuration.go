@@ -87,7 +87,7 @@ func Startup() Configuration {
 		CaseSensitive: true,
 		StrictRouting: true,
 		ServerHeader:  "Singularity",
-		AppName:       "Singularity v0.10",
+		AppName:       "Singularity v0.1.11",
 		ReadTimeout:   (30 * time.Second),
 	}
 
