@@ -51,6 +51,8 @@ func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
 	shelly25PowerSub(client, device.Maddr, "0")
 	shelly25PowerSub(client, device.Maddr, "1")
 	shelly25VotlageSub(client, device.Maddr)
+	shelly25EnergySub(client, device.Maddr, "0")
+	shelly25EnergySub(client, device.Maddr, "1")
 	fmt.Println("Shelly 25 device: " + device.Maddr + " Init Complete")
 
 	return nil
@@ -83,13 +85,37 @@ func rcv25Power(msg mqtt.Message) error {
 	dp := makeShelly25data()
 	metric := "Power"
 
+	dp, err := relayParseVals(dp, metric, msg)
+	if err != nil {
+		return err
+	}
+	write25point(dp, metric)
+
+	return nil
+}
+
+func rcv25Energy(msg mqtt.Message) error {
+	dp := makeShelly25data()
+	metric := "Energy"
+
+	dp, err := relayParseVals(dp, metric, msg)
+	if err != nil {
+		return err
+	}
+	write25point(dp, metric)
+
+	return nil
+}
+
+// Parse topic and fill in values in the data struct
+func relayParseVals(dp shelly25Data, metricName string, msg mqtt.Message) (shelly25Data, error) {
 	// Basic format checking and filling in values if we have correctly formated Topics
 	t := strings.Split(msg.Topic(), "/")
 
 	// Topic lenght should be 5 if not, error out!
 	if len(t) != 5 {
 		err := errors.New("malformed topic: " + msg.Topic())
-		return err
+		return dp, err
 	}
 	_, macAddr, found := strings.Cut(t[1], "-")
 	if found {
@@ -97,17 +123,14 @@ func rcv25Power(msg mqtt.Message) error {
 	}
 	dp.relay = t[3]
 
-	fmt.Println("MacAddress : " + dp.macAddress)
-
 	data, err := strconv.ParseFloat(string(msg.Payload()), 64)
 	if err != nil {
-		return err
+		return dp, err
 	}
 
-	dp.metric[metric] = data
-	write25point(dp, metric)
+	dp.metric[metricName] = data
 
-	return nil
+	return dp, nil
 }
 
 // Generic Shelly 2.5 Influx write func

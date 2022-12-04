@@ -65,6 +65,29 @@ var shellyVoltageHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt
 	fmt.Printf("%s : %s\n", msg.Topic(), msg.Payload())
 }
 
+// shellies/shellyswitch25-98CDAC38E9F5/relay/0/energy: 3572623
+var shellyEnergyHandler mqtt.MessageHandler = func(c mqtt.Client, m mqtt.Message) {
+	health.LastRecieved = time.Now()
+
+	shelly25Re, _ := regexp.Compile("shellies/shellyswitch25-.+$")
+	shelly15Re, _ := regexp.Compile("shellies/shellyswitch15-.+$")
+
+	switch true {
+	case shelly15Re.MatchString(m.Topic()):
+		err := rcv15Power(m)
+		if err != nil {
+			fmt.Println(err)
+		}
+	case shelly25Re.MatchString(m.Topic()):
+		err := rcv25Energy(m)
+		if err != nil {
+			fmt.Println(err)
+		}
+	default:
+		fmt.Printf("shellyTempHandler ---> Unknown %s : %s\n", m.Topic(), m.Payload())
+	}
+}
+
 /*
 Published on Topic: shellies/announce  value: {"id":"shellyswitch25-98CDAC38E9F5","model":"SHSW-25","mac":"98CDAC38E9F5","ip":"192.168.76.119","new_fw":true,"fw_ver":"20220209-093016/v1.11.8-g8c7bb8d","mode":"relay"}
 Shelly 25 Device -  shellies/shellyswitch25-98CDAC38E9F5/announce: {"id":"shellyswitch25-98CDAC38E9F5","model":"SHSW-25","mac":"98CDAC38E9F5","ip":"192.168.76.119","new_fw":true,"fw_ver":"20220209-093016/v1.11.8-g8c7bb8d","mode":"relay"}
@@ -90,6 +113,12 @@ func shelly25PowerSub(client mqtt.Client, macAddr string, relay string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/relay/" + relay + "/power"
 	client.Subscribe(topic, 0, shellyPowerHandler)
 	fmt.Println("Shelly25 Power relay " + relay + " subcribed: " + macAddr)
+}
+
+func shelly25EnergySub(c mqtt.Client, macAddr string, relay string) {
+	topic := "shellies/shellyswitch25-" + macAddr + "/relay/" + relay + "/energy"
+	c.Subscribe(topic, 0, shellyEnergyHandler)
+	fmt.Println("Shell 2.5 Energy Relay " + relay + " subscribed: " + macAddr)
 }
 
 // shellies/shellyswitch25-98CDAC38E9F5/voltage: 123.29
