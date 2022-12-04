@@ -59,7 +59,7 @@ func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
 }
 
 /*
-Receive Shelly25 Temp
+Receive Shelly 2.5 Temp
 */
 func rcv25Temp(msg mqtt.Message) error {
 	dp := makeShelly25data()
@@ -75,6 +75,22 @@ func rcv25Temp(msg mqtt.Message) error {
 	}
 
 	dp.metric[metric] = data
+	write25point(dp, metric)
+
+	return nil
+}
+
+/*
+Receive Shelly 2.5 Voltage
+*/
+func rcv25Voltage(m mqtt.Message) error {
+	dp := makeShelly25data()
+	metric := "Voltage"
+
+	dp, err := parseVals(dp, metric, m)
+	if err != nil {
+		return err
+	}
 	write25point(dp, metric)
 
 	return nil
@@ -105,6 +121,30 @@ func rcv25Energy(msg mqtt.Message) error {
 	write25point(dp, metric)
 
 	return nil
+}
+
+// Parse topic and fill in the metric value
+func parseVals(dp shelly25Data, metricName string, m mqtt.Message) (shelly25Data, error) {
+	// Basic format checking and filling in values if we have correctly formated Topics
+	t := strings.Split(m.Topic(), "/")
+
+	if len(t) != 3 {
+		err := errors.New("malformed topic: " + m.Topic())
+		return dp, err
+	}
+	_, macAddr, found := strings.Cut(t[1], "-")
+	if found {
+		dp.macAddress = macAddr
+	}
+
+	data, err := strconv.ParseFloat(string(m.Payload()), 64)
+	if err != nil {
+		return dp, err
+	}
+
+	dp.metric[metricName] = data
+
+	return dp, nil
 }
 
 // Parse topic and fill in values in the data struct

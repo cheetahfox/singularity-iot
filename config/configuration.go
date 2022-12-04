@@ -86,8 +86,8 @@ func Startup() Configuration {
 	conf.FiberConfig = fiber.Config{
 		CaseSensitive: true,
 		StrictRouting: true,
-		ServerHeader:  "IoT-gw",
-		AppName:       "IoT Midware v0.01",
+		ServerHeader:  "Singularity",
+		AppName:       "Singularity v0.10",
 		ReadTimeout:   (30 * time.Second),
 	}
 

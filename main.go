@@ -20,16 +20,21 @@ import (
 	"github.com/cheetahfox/singularity-iot/router"
 	"github.com/cheetahfox/singularity-iot/shelly"
 
+	"github.com/ansrivas/fiberprometheus/v2"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
 )
 
-const Version = "0.05"
+const Version = "0.10"
 
 func main() {
 	config := config.Startup()
 
 	singularity := fiber.New(config.FiberConfig)
+
+	prometheus := fiberprometheus.New("Singularity v0.10")
+	prometheus.RegisterAt(singularity, "/metrics")
+	singularity.Use(prometheus.Middleware)
 
 	router.SetupRoutes(singularity)
 

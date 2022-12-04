@@ -1,5 +1,5 @@
 /*
-Shelly Specific functions.
+Shelly generic functions for subscribing to topics or directing to device specific.
 */
 
 package shelly
@@ -62,6 +62,25 @@ var shellyPowerHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.M
 
 var shellyVoltageHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	health.LastRecieved = time.Now()
+
+	shelly25Re, _ := regexp.Compile("shellies/shellyswitch25-.+$")
+	shelly15Re, _ := regexp.Compile("shellies/shellyswitch15-.+$")
+
+	switch true {
+	case shelly15Re.MatchString(msg.Topic()):
+		err := rcv15Voltage(msg)
+		if err != nil {
+			fmt.Println(err)
+		}
+	case shelly25Re.MatchString(msg.Topic()):
+		err := rcv25Voltage(msg)
+		if err != nil {
+			fmt.Println(err)
+		}
+	default:
+		fmt.Printf("shellyVoltageHandler ---> Unknown %s : %s\n", msg.Topic(), msg.Payload())
+	}
+
 	fmt.Printf("%s : %s\n", msg.Topic(), msg.Payload())
 }
 
@@ -74,7 +93,7 @@ var shellyEnergyHandler mqtt.MessageHandler = func(c mqtt.Client, m mqtt.Message
 
 	switch true {
 	case shelly15Re.MatchString(m.Topic()):
-		err := rcv15Power(m)
+		err := rcv15Energy(m)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -105,14 +124,14 @@ Shelly 25 Device -  shellies/shellyswitch25-98CDAC38E9F5/temperature: 45.90
 func shelly25TempSub(client mqtt.Client, macAddr string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/temperature"
 	client.Subscribe(topic, 0, shellyTempHandler)
-	fmt.Println("Shelly25 Temp subcribed: " + macAddr)
+	fmt.Println("Shelly 2.5 Temp subcribed: " + macAddr)
 }
 
 // shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 117.89
 func shelly25PowerSub(client mqtt.Client, macAddr string, relay string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/relay/" + relay + "/power"
 	client.Subscribe(topic, 0, shellyPowerHandler)
-	fmt.Println("Shelly25 Power relay " + relay + " subcribed: " + macAddr)
+	fmt.Println("Shelly 2.5 Power relay " + relay + " subcribed: " + macAddr)
 }
 
 func shelly25EnergySub(c mqtt.Client, macAddr string, relay string) {
@@ -125,5 +144,5 @@ func shelly25EnergySub(c mqtt.Client, macAddr string, relay string) {
 func shelly25VotlageSub(client mqtt.Client, macAddr string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/votage"
 	client.Subscribe(topic, 0, shellyVoltageHandler)
-
+	fmt.Println("Shelly 2.5 Voltage subscribed: " + macAddr)
 }
