@@ -26,15 +26,6 @@ import (
 
 const Version = "0.05"
 
-func startListeners(conf config.Configuration) error {
-
-	for i, _ := range conf.Devices {
-		fmt.Println(conf.Devices[i].Name)
-	}
-
-	return nil
-}
-
 func main() {
 	config := config.Startup()
 
@@ -54,9 +45,11 @@ func main() {
 		panic(token.Error())
 	}
 
-	token = client.Subscribe(config.MqttTopic, 1, mqttcallbacks.MessageSubHandler)
-	token.Wait()
-	fmt.Printf("Subscribed to topic %s\n", config.MqttTopic)
+	/*
+		token = client.Subscribe(config.MqttTopic, 1, mqttcallbacks.MessageSubHandler)
+		token.Wait()
+		fmt.Printf("Subscribed to topic %s\n", config.MqttTopic)
+	*/
 
 	// setup devices
 	for i, _ := range config.Devices {

@@ -21,149 +21,107 @@ package shelly
 import (
 	"errors"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cheetahfox/singularity-iot/config"
 	"github.com/cheetahfox/singularity-iot/database"
+	"github.com/cheetahfox/singularity-iot/health"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 type shelly25Data struct {
 	macAddress string
-	mode       string
+	relay      string
 	metric     map[string]float64
+}
+
+func makeShelly25data() shelly25Data {
+	var data shelly25Data
+	data.metric = make(map[string]float64, 0)
+
+	return data
 }
 
 // Init a new Shelly25
 func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
-	shellyTempSub(client, device.Maddr)
-	shellyPowerSub(client, device.Maddr, "0")
-	shellyPowerSub(client, device.Maddr, "1")
+	shelly25TempSub(client, device.Maddr)
+	shelly25PowerSub(client, device.Maddr, "0")
+	shelly25PowerSub(client, device.Maddr, "1")
+	shelly25VotlageSub(client, device.Maddr)
+	fmt.Println("Shelly 25 device: " + device.Maddr + " Init Complete")
 
 	return nil
 }
 
-func makeShelly25data() shelly25Data {
-	var dev shelly25Data
-	dev.metric = make(map[string]float64, 0)
-
-	return dev
-}
-
-// Check to see if the metric string matches the valid options
-func validateMetric(metric string) bool {
-	verbs := []string{
-		"power",
-		"energy",
-		"0",
-		"1",
-		"temperature",
-		"temperature_f",
-		"temperature_status",
-		"overtemperature",
-		"voltage",
-	}
-
-	for i := range verbs {
-		if metric == verbs[i] {
-			return true
-		}
-	}
-
-	return false
-}
-
 /*
-Here I parse through the Mtqq message and return a struct with the device details and the current metric/value
-This is complicated by the fact that the length topic encodes what we data/case we have.
+Receive Shelly25 Temp
 */
-func parseMessage25(msg mqtt.Message) (shelly25Data, error) {
-	dev := makeShelly25data()
+func rcv25Temp(msg mqtt.Message) error {
+	dp := makeShelly25data()
 
-	// All valid messages should be at least three values and less than 6 when split
-	msgTopic := strings.Split(msg.Topic(), "/")
-	if len(msgTopic) < 3 || len(msgTopic) >= 6 {
-		fmt.Printf("Unable to split to Mqtt Topic: %s \n", msg.Topic())
-		return dev, errors.New("unable to parse")
+	// Get the Mac Address by removing the front and back of the expected topic string
+	preformatMac := strings.TrimPrefix(msg.Topic(), "shellies/shellyswitch25-")
+	dp.macAddress = strings.TrimSuffix(preformatMac, "/temperature")
+	metric := "Temperature"
+
+	data, err := strconv.ParseFloat(string(msg.Payload()), 64)
+	if err != nil {
+		return err
 	}
 
-	// This means we have a device metric
-	if len(msgTopic) == 3 {
-		if !validateMetric(msgTopic[2]) {
-			errmessage := fmt.Sprintf("invalid metric : %s\n", msgTopic[2])
-			return dev, errors.New(errmessage)
-		}
-		metric, err := strconv.ParseFloat(string(msg.Payload()), 64)
-		if err != nil {
-			return dev, err
-		}
-		dev.metric[msgTopic[2]] = metric
-	}
+	dp.metric[metric] = data
+	write25point(dp, metric)
 
-	/*
-		len 4 is if we have a relay or input message. Either relay/id on/of or input/id 0/1.
-		I am going to simplify my life by making storing 0/1 for off/on. And seting the metric string to input-id/relay-id
-	*/
-	if len(msgTopic) == 4 {
-		var metricName string
-		switch msgTopic[3] {
-		case "input":
-			dev.mode = "input"
-			metricName = fmt.Sprintf("input%s", msgTopic[3])
-		case "relay":
-			dev.mode = "relay"
-			metricName = fmt.Sprintf("relay%s", msgTopic[3])
-		case "roller":
-			dev.mode = "roller"
-			metricName = fmt.Sprintf("roller%s", msgTopic[3])
-		}
-		metric, err := strconv.ParseFloat(string(msg.Payload()), 64)
-		if err != nil {
-			return dev, err
-		}
-		if metricName != "" {
-			dev.metric[metricName] = metric
-		}
-
-	}
-
-	return dev, nil
+	return nil
 }
 
-func receiveMessage25(msg mqtt.Message) {
-	fmt.Printf("Shelly 25 Device -  %s: %s\n", msg.Topic(), msg.Payload())
+// shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 158.20
+func rcv25Power(msg mqtt.Message) error {
+	dp := makeShelly25data()
+	metric := "Power"
 
-	v, _ := regexp.Compile(".+voltage$")
-	topic := msg.Topic()
+	// Basic format checking and filling in values if we have correctly formated Topics
+	t := strings.Split(msg.Topic(), "/")
 
-	dev, err := parseMessage25(msg)
+	// Topic lenght should be 5 if not, error out!
+	if len(t) != 5 {
+		err := errors.New("malformed topic: " + msg.Topic())
+		return err
+	}
+	_, macAddr, found := strings.Cut(t[1], "-")
+	if found {
+		dp.macAddress = macAddr
+	}
+	dp.relay = t[3]
+
+	fmt.Println("MacAddress : " + dp.macAddress)
+
+	data, err := strconv.ParseFloat(string(msg.Payload()), 64)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
-	if !validateMac(dev.macAddress) {
-		return
+	dp.metric[metric] = data
+	write25point(dp, metric)
+
+	return nil
+}
+
+// Generic Shelly 2.5 Influx write func
+func write25point(dp shelly25Data, metric string) {
+	p := influxdb2.NewPointWithMeasurement("Shelly 2.5 Metrics")
+
+	// check if we have a Relay set and add the Tag if we do.
+	if dp.relay != "" {
+		p.AddTag("Relay", dp.relay)
 	}
+	p.AddTag("Mac Address", dp.macAddress)
+	p.SetTime(time.Now())
+	p.AddField(metric, dp.metric[metric])
 
-	if v.MatchString(topic) {
-		payload := msg.Payload()
-		currentTime := time.Now()
-
-		voltage, err := strconv.ParseFloat(string(payload), 64)
-		if err != nil {
-			fmt.Println(err)
-		}
-		p := influxdb2.NewPointWithMeasurement("Shelly 2.5 Metrics")
-		p.AddTag("Mac Address", dev.macAddress)
-		p.AddField("Voltage", voltage)
-		p.SetTime(currentTime)
-
-		fmt.Println("Writing point: ", currentTime.Format(time.UnixDate))
-		database.DbWrite.WritePoint(p)
-	}
+	database.DbWrite.WritePoint(p)
+	health.PointsWritten++
 }
