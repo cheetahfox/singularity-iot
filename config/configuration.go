@@ -33,7 +33,7 @@ const DeviceConfig = "/etc/singularity/devices.yml"
 type Iotdevices struct {
 	Name   string `yaml:"name"`
 	Hwtype string `yaml:"hwtype"`
-	Mqid   string `yaml:"mqid"`
+	Maddr  string `yaml:"mqid"`
 	Topic  string `yaml:"topic"`
 }
 
@@ -86,8 +86,8 @@ func Startup() Configuration {
 	conf.FiberConfig = fiber.Config{
 		CaseSensitive: true,
 		StrictRouting: true,
-		ServerHeader:  "IoT-gw",
-		AppName:       "IoT Midware v0.01",
+		ServerHeader:  "Singularity",
+		AppName:       "Singularity v0.10",
 		ReadTimeout:   (30 * time.Second),
 	}
 
