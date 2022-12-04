@@ -24,15 +24,6 @@ import (
 
 const Version = "0.05"
 
-func startListeners(conf config.Configuration) error {
-
-	for i, _ := range conf.Devices {
-		fmt.Println(conf.Devices[i].Name)
-	}
-
-	return nil
-}
-
 func main() {
 	config := config.Startup()
 
