@@ -81,8 +81,6 @@ var shellyVoltageHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt
 	default:
 		fmt.Printf("shellyVoltageHandler ---> Unknown %s : %s\n", msg.Topic(), msg.Payload())
 	}
-
-	fmt.Printf("%s : %s\n", msg.Topic(), msg.Payload())
 }
 
 // shellies/shellyswitch25-98CDAC38E9F5/relay/0/energy: 3572623

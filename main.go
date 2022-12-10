@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/cheetahfox/singularity-iot/config"
 	"github.com/cheetahfox/singularity-iot/database"
@@ -45,6 +46,8 @@ func main() {
 	database.ConnectInflux(config)
 	mqttcallbacks.SetDefaultCallbacks(&config)
 	client := mqtt.NewClient(&config.Options)
+	// sleep for 10 seconds before connecting, I have seen issues with the inital connection
+	time.Sleep(10 * time.Second)
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil {
 		panic(token.Error())

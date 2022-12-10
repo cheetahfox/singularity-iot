@@ -96,7 +96,10 @@ func rcv25Voltage(m mqtt.Message) error {
 	return nil
 }
 
-// shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 158.20
+/*
+Receive Shelly 2.5 current power in watts
+Topic/Metric output shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 158.20
+*/
 func rcv25Power(msg mqtt.Message) error {
 	dp := makeShelly25data()
 	metric := "Power"
@@ -110,6 +113,12 @@ func rcv25Power(msg mqtt.Message) error {
 	return nil
 }
 
+/*
+Recieve Shelly 2.5 energy
+This is in a total of watt minutes since the device was powered on/rebooted.
+This is kinda of an odd metric to work with but it's rather accurate and the best way to figure out
+long term power usage.
+*/
 func rcv25Energy(msg mqtt.Message) error {
 	dp := makeShelly25data()
 	metric := "Energy"
