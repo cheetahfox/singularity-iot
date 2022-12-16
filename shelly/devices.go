@@ -123,25 +123,21 @@ Shelly 25 Device -  shellies/shellyswitch25-98CDAC38E9F5/temperature: 45.90
 func shelly25TempSub(client mqtt.Client, macAddr string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/temperature"
 	client.Subscribe(topic, 0, shellyTempHandler)
-	fmt.Println("Shelly 2.5 Temp subcribed: " + macAddr)
 }
 
 // shellies/shellyswitch25-98CDAC38E9F5/relay/0/power: 117.89
 func shelly25PowerSub(client mqtt.Client, macAddr string, relay string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/relay/" + relay + "/power"
 	client.Subscribe(topic, 0, shellyPowerHandler)
-	fmt.Println("Shelly 2.5 Power relay " + relay + " subcribed: " + macAddr)
 }
 
 func shelly25EnergySub(c mqtt.Client, macAddr string, relay string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/relay/" + relay + "/energy"
 	c.Subscribe(topic, 0, shellyEnergyHandler)
-	fmt.Println("Shell 2.5 Energy Relay " + relay + " subscribed: " + macAddr)
 }
 
 // shellies/shellyswitch25-98CDAC38E9F5/voltage: 123.29
 func shelly25VotlageSub(client mqtt.Client, macAddr string) {
 	topic := "shellies/shellyswitch25-" + macAddr + "/voltage"
 	client.Subscribe(topic, 0, shellyVoltageHandler)
-	fmt.Println("Shelly 2.5 Voltage subscribed: " + macAddr)
 }
