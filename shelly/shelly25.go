@@ -38,6 +38,10 @@ type shelly25Data struct {
 	metric     map[string]float64
 }
 
+type S25Dev struct {
+	MACAddress string `json:"Mac Address"`
+}
+
 func makeShelly25data() shelly25Data {
 	var data shelly25Data
 	data.metric = make(map[string]float64, 0)
@@ -45,8 +49,11 @@ func makeShelly25data() shelly25Data {
 	return data
 }
 
+var shelly25Devs []S25Dev
+
 // Init a new Shelly25
 func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
+	var newDev S25Dev
 	shelly25TempSub(client, device.Maddr)
 	shelly25PowerSub(client, device.Maddr, "0")
 	shelly25PowerSub(client, device.Maddr, "1")
@@ -55,6 +62,8 @@ func InitShelly25dev(client mqtt.Client, device config.Iotdevices) error {
 	shelly25EnergySub(client, device.Maddr, "1")
 	fmt.Println("Shelly 25 device: " + device.Maddr + " Init Complete")
 
+	newDev.MACAddress = device.Maddr
+	shelly25Devs = append(shelly25Devs, newDev)
 	return nil
 }
 
