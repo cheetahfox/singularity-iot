@@ -17,7 +17,7 @@ import (
 
 	"github.com/cheetahfox/singularity-iot/config"
 	"github.com/cheetahfox/singularity-iot/database"
-	mqttcallbacks "github.com/cheetahfox/singularity-iot/mqtt_callbacks"
+	mqttcallbacks "github.com/cheetahfox/singularity-iot/mqtt"
 	"github.com/cheetahfox/singularity-iot/router"
 	"github.com/cheetahfox/singularity-iot/shelly"
 

@@ -1,4 +1,4 @@
-package mqttcallbacks
+package mqttlib
 
 import (
 	"fmt"

@@ -42,6 +42,12 @@ type S25Dev struct {
 	MACAddress string `json:"Mac Address"`
 }
 
+type Shelly25Relay struct {
+	MACAddress string
+	Relay      string
+	State      string
+}
+
 func makeShelly25data() shelly25Data {
 	var data shelly25Data
 	data.metric = make(map[string]float64, 0)
@@ -137,6 +143,14 @@ func rcv25Energy(msg mqtt.Message) error {
 		return err
 	}
 	write25point(dp, metric)
+
+	return nil
+}
+
+/*
+topic: shellies/shellyswitch25-98CDAC38E9F5/relay/1/command msg: "on/off"
+*/
+func snd25RelayCommand(command Shelly25Relay) error {
 
 	return nil
 }

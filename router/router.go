@@ -18,6 +18,7 @@ func SetupRoutes(app *fiber.App) {
 	// Shelly 2.5 v1 Web API
 	shelly25 := app.Group("/api/shelly2.5/v1", logger.New())
 	shelly25.Get("list", shelly.Api25ListDevsV1)
+	shelly25.Put("relay", shelly.Api25RelayControl)
 
 	//api := app.Group("/api/v1/", logger.New())
 	//api.Get("growlights", growlightv1.GetGrowLights)
