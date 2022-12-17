@@ -26,14 +26,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const Version = "0.1.12"
-
 func main() {
-	config := config.Startup()
+	conf := config.Startup()
 
-	singularity := fiber.New(config.FiberConfig)
+	singularity := fiber.New(conf.FiberConfig)
 
-	prometheus := fiberprometheus.New("Singularity v" + Version)
+	prometheus := fiberprometheus.New("Singularity v" + config.Version)
 	prometheus.RegisterAt(singularity, "/metrics")
 	singularity.Use(prometheus.Middleware)
 
@@ -43,9 +41,9 @@ func main() {
 		singularity.Listen(":2200")
 	}()
 
-	database.ConnectInflux(config)
-	mqttcallbacks.SetDefaultCallbacks(&config)
-	client := mqtt.NewClient(&config.Options)
+	database.ConnectInflux(conf)
+	mqttcallbacks.SetDefaultCallbacks(&conf)
+	client := mqtt.NewClient(&conf.Options)
 	// sleep for 10 seconds before connecting, I have seen issues with the inital connection
 	time.Sleep(10 * time.Second)
 	token := client.Connect()
@@ -60,9 +58,9 @@ func main() {
 	*/
 
 	// setup devices
-	for i := range config.Devices {
-		if config.Devices[i].Hwtype == "shelly25" {
-			err := shelly.InitShelly25dev(client, config.Devices[i])
+	for i := range conf.Devices {
+		if conf.Devices[i].Hwtype == "shelly25" {
+			err := shelly.InitShelly25dev(client, conf.Devices[i])
 			if err != nil {
 				log.Fatalln(err)
 			}

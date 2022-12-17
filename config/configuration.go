@@ -27,6 +27,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const Version = "0.1.14"
 const DeviceConfig = "/etc/singularity/devices.yml"
 
 // Iotdevices
@@ -87,7 +88,7 @@ func Startup() Configuration {
 		CaseSensitive: true,
 		StrictRouting: true,
 		ServerHeader:  "Singularity",
-		AppName:       "Singularity v0.1.12",
+		AppName:       "Singularity " + Version,
 		ReadTimeout:   (30 * time.Second),
 	}
 
