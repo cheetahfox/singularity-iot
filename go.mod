@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/ansrivas/fiberprometheus/v2 v2.4.1
 	github.com/eclipse/paho.mqtt.golang v1.4.1
-	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/influxdata/influxdb-client-go/v2 v2.9.1
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -32,10 +32,10 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.49.0 // indirect
+	github.com/valyala/fasthttp v1.50.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 )
