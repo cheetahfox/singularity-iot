@@ -1,6 +1,8 @@
 module github.com/cheetahfox/singularity-iot
 
-go 1.18
+go 1.23.0
+
+toolchain go1.24.1
 
 require (
 	github.com/ansrivas/fiberprometheus/v2 v2.4.1
