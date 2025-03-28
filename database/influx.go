@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"time"
 
@@ -65,6 +66,21 @@ func DbHealthCheck(sleepTime time.Duration) bool {
 	if (err != nil) || dbhealth.Status == domain.HealthCheckStatusFail {
 		return false
 	}
+	return true
+}
+
+// Check current DNS server resolution and sleep up to sd (seconds delay) in 15 second intervals
+func checkDns(host string, sd int) bool {
+
+	return true
+}
+
+func lookupHost(host string) bool {
+	_, err := net.LookupIP(host)
+	if err != nil {
+		return false
+	}
+
 	return true
 }
 
