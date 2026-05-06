@@ -7,7 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/ansrivas/fiberprometheus/v2 v2.4.1
 	github.com/eclipse/paho.mqtt.golang v1.4.1
-	github.com/gofiber/fiber/v2 v2.52.12
+	github.com/gofiber/fiber/v2 v2.52.13
 	github.com/influxdata/influxdb-client-go/v2 v2.9.1
 	gopkg.in/yaml.v2 v2.4.0
 )
