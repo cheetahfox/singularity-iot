@@ -1,8 +1,6 @@
 module github.com/cheetahfox/singularity-iot
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/ansrivas/fiberprometheus/v2 v2.4.1
@@ -36,8 +34,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 )
